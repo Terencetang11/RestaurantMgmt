@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Menu Items - The Marence Bistro</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+        <!---- Javascript Sources Placeholder ---->
+    <script>
+    <!--   Script for new Cuisine button   -->
+    function showNewInputForm() {
+          var x = document.getElementById("new_entry_container");
+          if (x.style.display === "none") {
+                x.style.display = "block";
+          } else {
+                x.style.display = "none";
+          }
+
+          var x = document.getElementById("new_entry_form");
+          if (x.style.display === "none") {
+                x.style.display = "block";
+          } else {
+                x.style.display = "none";
+          }
+    }
+
+    <!--   Script for edit Cuisine button   -->
+    function showEditInputForm(id, menuItemName, cuisineName, price) {
+          var x = document.getElementById("edit_entry_form");
+          if (x.style.display === "none") {
+                x.style.display = "block";
+          } else {
+                x.style.display = "none";
+          }
+
+          showNewInputForm();
+
+          if (document.getElementById("new_entry_form").style.display === "block") {
+            document.getElementById("new_entry_form").style.display = "none";
+          }
+
+          if (document.getElementById("new_entry_container").style.display === "block" &&
+                x.style.display === "block") {
+             document.getElementById("new_entry_container").style.display = "none";
+          }
+
+          document.getElementById("editMenuItemID").value = id;
+          document.getElementById("editMenuItemName").value = menuItemName;
+          document.getElementById("editCuisineName").value = cuisineName;
+          document.getElementById("editPrice").value = price;
+    }
+    </script>
+</head>
+<body>
+
+<!---- Navigation Menu ----->
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+<div class="container-fluid">
+    <button class="navbar-toggler" type="button" data-toggler="collapse" data-target=
+"navbarResponsive">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+    <a class="nav-link" href="/">Index</a> 
+    </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="/ingredients">Ingredients</a> 
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="/menuItems">Menu Items</a> 
+    </li>
+    <li class="nav-item">
+    <a class="nav-link active" href="/menuItemIngredients">Menu Item Ingredients</a> 
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="/cuisines">Cuisines</a> 
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="/restaurantSchedule">Restaurant Schedule</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="/chefs">Chefs</a>
+    </li>
+    <li class="nav-item">
+    <a class="nav-link" href="/chefSchedule">Chef Schedule</a>
+    </li>
+    </ul>
+  </div>
+    
+    </div>
+
+</nav>
+
+
+<!---- Table Placeholder ----->
+<div class="container-fluid padding">
+    <div class="row welcome text-center">
+    <div class="col-12">
+        <h4 class="display-5">The Marence Bistro</h4>
+        </div>
+        <hr>
+        <div class="col-12">
+        <p class="lead">Menu Item Ingredients</p>
+        </div>
+<table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Menu Item ID</th>
+          <th scope="col">Menu Item Name</th>
+          <th scope="col">Ingredient ID</th>
+          <th scope="col">Ingredient Name</th>
+          <th scope="col">Ingredient Inventory</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+        <tbody>
+            {% for r in rows %}
+            <tr>
+                <td> {{ r.0 }}</td>
+                <td> {{ r[1] }}</td>
+                <td> {{ r[2] }}</td>
+                <td> {{ r[3] }}</td>
+                <td> {{ r[4] }}</td>        
+                <td>
+                <button type="button" class="btn btn-danger" title = "Delete" onClick="window.location='/menuItemIngredients?type=delete&menuItemID={{ r.0 }}&ingredientID={{ r.2 }}'"><i class="far fa-trash-alt"></i></button>
+                </td>            
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="container">
+        <div class="row" id="new_entry_container">
+            <div class="col text-center">
+                <button type="button" class="btn btn-primary btn-lg" align = "center" onClick="showNewInputForm()">Add Menu Item</button>
+            </div>
+        </div>
+
+        <!---- New Menu Item Ingredient Input Form Placeholder  ----->
+        <div id="new_entry_form" style="display:none">
+            <form id="addingmenuitemingredient" action="/menuItemIngredients?type=insert" method="post">
+                <fieldset>
+                    <legend>Add a new Menu Item Ingredient Combination below:</legend>
+                    <p><strong>Instructions:</strong> Please input the menu item name and a new ingredient for the dish below!</p>
+                    <label>
+                        Menu Item Name:
+                        <select name="menuItemID" required="1">
+                            {% for m in menuItems %}
+                            <option value='{{ m.0 }}'>{{ m.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>
+                        Ingredient Name:
+                        <select name="ingredientID" required="1">
+                            {% for i in ingredients %}
+                            <option value='{{ i.0 }}'>{{ i.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <br>
+                    <input type="submit" value="Submit">
+                </fieldset>
+                <br>
+                <br>
+            </form>
+        </div>
+
+    </div>
+    </div>
+    </div>
+
+<!---- Contact Footer ----->
+<footer>
+    
+<div class="container-fluid padding">
+    
+<div class="row text-center">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <hr class="light">
+        <h5>Contact Us</h5>
+        <hr class="light">
+        <p>Phone: (555) 555-5555</p>
+        <p>Email: email@oregonstate.edu</p>
+        <p>Oregon State University</p>
+        <p>Corvallis, Oregon</p>
+    </div>
+    <div class="col-md-4"></div>
+</div>       
+</footer>
+
+</body>
+</html>
